@@ -1,6 +1,25 @@
 // $bundle_id$ will be replaced with the
-// approriate bundle id when bundling with rollup.
+// appropriate bundle id when bundling with rollup.
 let __anio_bundle_id = "$bundle_id$"
+// $bundler_version$ will be replaced with the
+// appropriate bundler version when bundling with rollup.
+let __anio_bundler_version = "$bundler_version$"
+
+function printDebugMessage(message) {
+	if (typeof process !== "object") return
+
+	if (!("env" in process)) return
+
+	if (!("ANIO_BUNDLER_DEBUG" in process.env)) return
+
+	process.stderr.write(
+		`[@anio-sh/bundler v${__anio_bundler_version}] ${message}\n`
+	)
+}
+
+printDebugMessage(
+	`Application was bundled by version ${__anio_bundler_version}.`
+)
 
 function normalizeResourcePath(resource) {
 	// todo: handle dot and double dot
@@ -34,13 +53,7 @@ export default function loadResourceFromBundle(resource) {
 		)
 	}
 
-	if (typeof process !== "undefined" && process.env) {
-		if ("ANIO_BUNDLER_DEBUG" in process.env) {
-			process.stderr.write(
-				`[@anio-sh/bundler] Load '${resource_path}' from local bundle '${__anio_bundle_id}'\n`
-			)
-		}
-	}
+	printDebugMessage(`Load '${resource_path}' from local bundle '${__anio_bundle_id}'`)
 
 	return resources[resource_path]
 }

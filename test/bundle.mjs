@@ -5,13 +5,32 @@ if (!("__anio_bundler_resources" in globalThis)) {
 	globalThis.__anio_bundler_resources = {};
 }
 
-globalThis.__anio_bundler_resources["9f8e01c7db84bf7b"] = JSON.parse(
+globalThis.__anio_bundler_resources["9274f5936b8d9d41"] = JSON.parse(
 	"{\"a/test.sh\":\"test\\n\",\"bla.sh\":\"\"}"
 );
 
-// 9f8e01c7db84bf7b will be replaced with the
-// approriate bundle id when bundling with rollup.
-let __anio_bundle_id = "9f8e01c7db84bf7b";
+// 9274f5936b8d9d41 will be replaced with the
+// appropriate bundle id when bundling with rollup.
+let __anio_bundle_id = "9274f5936b8d9d41";
+// 0.0.3 will be replaced with the
+// appropriate bundler version when bundling with rollup.
+let __anio_bundler_version = "0.0.3";
+
+function printDebugMessage(message) {
+	if (typeof process !== "object") return
+
+	if (!("env" in process)) return
+
+	if (!("ANIO_BUNDLER_DEBUG" in process.env)) return
+
+	process.stderr.write(
+		`[@anio-sh/bundler v${__anio_bundler_version}] ${message}\n`
+	);
+}
+
+printDebugMessage(
+	`Application was bundled by version ${__anio_bundler_version}.`
+);
 
 function normalizeResourcePath(resource) {
 	// todo: handle dot and double dot
@@ -27,11 +46,11 @@ function normalizeResourcePath(resource) {
 function loadResourceFromBundle(resource) {
 	if (!("__anio_bundler_resources" in globalThis)) {
 		throw new Error(
-			`__anio_bundler_resources global variable is missing.`
+			`__anio_bundler_resources global variable is missing. This is most likely due to misuse of the package OR a bug in @anio-sh/bundler.`
 		)
 	} else if (!(__anio_bundle_id in globalThis.__anio_bundler_resources)) {
 		throw new Error(
-			`Cannot find bundle '${__anio_bundle_id}' in __anio_bundler_resources.`
+			`Cannot find bundle '${__anio_bundle_id}' in __anio_bundler_resources. This is most likely due to a bug in @anio-sh/bundler.`
 		)
 	}
 
@@ -45,13 +64,7 @@ function loadResourceFromBundle(resource) {
 		)
 	}
 
-	if (typeof process !== "undefined" && process.env) {
-		if ("ANIO_BUNDLER_DEBUG" in process.env) {
-			process.stderr.write(
-				`[@anio-sh/bundler] Load '${resource_path}' from local bundle '${__anio_bundle_id}'\n`
-			);
-		}
-	}
+	printDebugMessage(`Load '${resource_path}' from local bundle '${__anio_bundle_id}'`);
 
 	return resources[resource_path]
 }

@@ -11,7 +11,17 @@ async function createVirtualModuleSourceCode(build_id) {
 		)
 	)).toString()
 
-	return template_str.split("$bundle_id$").join(build_id)
+	const package_json = JSON.parse((await fs.readFile(
+		path.resolve(__dirname, "..", "..", "package.json")
+	)).toString())
+
+	return template_str
+		.split("$bundle_id$")
+		.join(build_id)
+		.split("$bundler_version$")
+		.join(
+			package_json.version
+		)
 }
 
 module.exports = function(build_id) {
