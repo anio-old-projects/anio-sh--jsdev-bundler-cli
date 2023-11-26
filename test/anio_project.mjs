@@ -1,7 +1,9 @@
-export default {
-	bundler: {
-		entry: "./src/entry.mjs",
-		output: "./bundle.mjs"
+export default async function() {
+	return {
+		bundler: [{
+			entry: "./src/entry.mjs",
+			output: "./bundle.mjs"
+		}]
 	}
 }
 

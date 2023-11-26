@@ -1,6 +1,7 @@
 const path = require("node:path")
 const findNearestFile = require("@anio-sh/find-nearest-file")
 
+const arrayify = require("../util/arrayify.js")
 const createResourcesBundle = require("../util/createResourcesBundle.js")
 const randomIdentifier = require("../util/randomIdentifier.js")
 const resolvePathFactory = require("./resolvePath.js")
@@ -9,6 +10,16 @@ const isDirectory = require("../util/isDirectory.js")
 const rollup_pluginFactory = require("../rollup/plugin.js")
 
 const build = require("./build.js")
+
+async function readAnioProjectConfig(anio_project_config_path) {
+	const config = (await import(anio_project_config_path)).default
+
+	if (typeof config === "function") {
+		return await config()
+	}
+
+	return config
+}
 
 module.exports = async function(project_root) {
 	const build_id = await randomIdentifier()
@@ -26,7 +37,9 @@ module.exports = async function(project_root) {
 		`Found anio_project.mjs: ${anio_project_config_path}\n`
 	)
 
-	const anio_project_config = (await import(anio_project_config_path)).default
+	const anio_project_config = await readAnioProjectConfig(
+		anio_project_config_path
+	)
 
 	const resources_path = path.resolve(
 		path.dirname(anio_project_config_path), "bundle.resources"
@@ -43,18 +56,22 @@ module.exports = async function(project_root) {
 	}
 
 	const resolvePath = resolvePathFactory(project_root)
+	let i = 0
 
-	const entry_file = resolvePath(anio_project_config.bundler.entry)
-	const output_file = resolvePath(anio_project_config.bundler.output)
+	for (const bundle of arrayify(anio_project_config.bundler)) {
+		const bundle_id = `${build_id}-{${i}}`
 
-	const build_context = {
-		id:  build_id,
-		input: entry_file,
-		output: output_file,
-		anio_project_config,
-		resources,
-		rollup_plugin: rollup_pluginFactory(build_id)
+		const build_context = {
+			id:  bundle_id,
+			input: resolvePath(bundle.entry),
+			output: resolvePath(bundle.output),
+			anio_project_config,
+			resources,
+			rollup_plugin: rollup_pluginFactory(bundle_id)
+		}
+
+		await build(build_context)
+
+		++i
 	}
-
-	await build(build_context)
 }

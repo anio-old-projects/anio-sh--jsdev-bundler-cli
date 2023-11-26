@@ -5,16 +5,16 @@ if (!("__anio_bundler_resources" in globalThis)) {
 	globalThis.__anio_bundler_resources = {};
 }
 
-globalThis.__anio_bundler_resources["9274f5936b8d9d41"] = JSON.parse(
+globalThis.__anio_bundler_resources["85a9401053cf542f-{0}"] = JSON.parse(
 	"{\"a/test.sh\":\"test\\n\",\"bla.sh\":\"\"}"
 );
 
-// 9274f5936b8d9d41 will be replaced with the
+// 85a9401053cf542f-{0} will be replaced with the
 // appropriate bundle id when bundling with rollup.
-let __anio_bundle_id = "9274f5936b8d9d41";
-// 0.0.3 will be replaced with the
+let __anio_bundle_id = "85a9401053cf542f-{0}";
+// 0.0.4 will be replaced with the
 // appropriate bundler version when bundling with rollup.
-let __anio_bundler_version = "0.0.3";
+let __anio_bundler_version = "0.0.4";
 
 function printDebugMessage(message) {
 	if (typeof process !== "object") return
