@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S node --experimental-detect-module
 const path = require("node:path")
 const fs = require("node:fs/promises")
 const process = require("node:process")
