@@ -17,10 +17,6 @@ function printDebugMessage(message) {
 	)
 }
 
-printDebugMessage(
-	`Application was bundled by version ${__anio_bundler_version}.`
-)
-
 function normalizeResourcePath(resource) {
 	// todo: handle dot and double dot
 	let normalized_path = resource

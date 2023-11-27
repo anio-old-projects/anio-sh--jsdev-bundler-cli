@@ -3,7 +3,7 @@
 const fs = require("node:fs/promises")
 const path = require("node:path")
 
-async function createVirtualModuleSourceCode(build_id) {
+async function createVirtualModuleSourceCode(build_context) {
 	const template_str = (await fs.readFile(
 		path.resolve(
 			__dirname,
@@ -11,20 +11,16 @@ async function createVirtualModuleSourceCode(build_id) {
 		)
 	)).toString()
 
-	const package_json = JSON.parse((await fs.readFile(
-		path.resolve(__dirname, "..", "..", "package.json")
-	)).toString())
-
 	return template_str
 		.split("$bundle_id$")
-		.join(build_id)
+		.join(build_context.id)
 		.split("$bundler_version$")
 		.join(
-			package_json.version
+			build_context.package_json.version
 		)
 }
 
-module.exports = function(build_id) {
+module.exports = function(build_context) {
 	return function anioBundlerResolverPlugin() {
 		return {
 			name: "anio-bundler-resolver-plugin",
@@ -41,7 +37,7 @@ module.exports = function(build_id) {
 
 			async load(id) {
 				if (id === "@anio-sh/bundler") {
-					return await createVirtualModuleSourceCode(build_id)
+					return await createVirtualModuleSourceCode(build_context)
 				}
 
 				return null // other ids should be handled as usually

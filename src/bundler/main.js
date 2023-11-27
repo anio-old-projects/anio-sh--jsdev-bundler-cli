@@ -1,5 +1,6 @@
 const path = require("node:path")
 const findNearestFile = require("@anio-sh/find-nearest-file")
+const fs = require("node:fs/promises")
 
 const arrayify = require("../util/arrayify.js")
 const createResourcesBundle = require("../util/createResourcesBundle.js")
@@ -23,6 +24,10 @@ async function readAnioProjectConfig(anio_project_config_path) {
 
 module.exports = async function(project_root) {
 	const build_id = await randomIdentifier()
+
+	const package_json = JSON.parse((await fs.readFile(
+		path.resolve(__dirname, "..", "..", "package.json")
+	)).toString())
 
 	const anio_project_config_path = await findNearestFile(
 		"anio_project.mjs", project_root
@@ -58,17 +63,24 @@ module.exports = async function(project_root) {
 	const resolvePath = resolvePathFactory(project_root)
 	let i = 0
 
+	const build_date = new Date()
+
 	for (const bundle of arrayify(anio_project_config.bundler)) {
 		const bundle_id = `${build_id}-{${i}}`
 
-		const build_context = {
+		let build_context = {
+			package_json,
 			id:  bundle_id,
+			build_date,
 			input: resolvePath(bundle.entry),
 			output: resolvePath(bundle.output),
 			anio_project_config,
-			resources,
-			rollup_plugin: rollup_pluginFactory(bundle_id)
+			resources
 		}
+
+		build_context.rollup_plugin = rollup_pluginFactory(
+			build_context
+		)
 
 		await build(build_context)
 

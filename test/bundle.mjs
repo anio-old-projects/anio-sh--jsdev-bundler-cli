@@ -5,16 +5,30 @@ if (!("__anio_bundler_resources" in globalThis)) {
 	globalThis.__anio_bundler_resources = {};
 }
 
-globalThis.__anio_bundler_resources["85a9401053cf542f-{0}"] = JSON.parse(
+globalThis.__anio_bundler_resources["64de3d40048d8948-{0}"] = JSON.parse(
 	"{\"a/test.sh\":\"test\\n\",\"bla.sh\":\"\"}"
 );
 
-// 85a9401053cf542f-{0} will be replaced with the
+
+
+(function () {
+	if (typeof process !== "object") return;
+
+	if (!("env" in process)) return;
+
+	if (!("ANIO_BUNDLER_DEBUG" in process.env)) return;
+
+	process.stderr.write(
+		"[@anio-sh/bundler v0.0.5] Application was bundled by version 0.0.5 on Mon, 27 Nov 2023 00:13:03 GMT and has build id '64de3d40048d8948-{0}'.\n"
+	);
+})();
+
+	// 64de3d40048d8948-{0} will be replaced with the
 // appropriate bundle id when bundling with rollup.
-let __anio_bundle_id = "85a9401053cf542f-{0}";
-// 0.0.4 will be replaced with the
+let __anio_bundle_id = "64de3d40048d8948-{0}";
+// 0.0.5 will be replaced with the
 // appropriate bundler version when bundling with rollup.
-let __anio_bundler_version = "0.0.4";
+let __anio_bundler_version = "0.0.5";
 
 function printDebugMessage(message) {
 	if (typeof process !== "object") return
@@ -27,10 +41,6 @@ function printDebugMessage(message) {
 		`[@anio-sh/bundler v${__anio_bundler_version}] ${message}\n`
 	);
 }
-
-printDebugMessage(
-	`Application was bundled by version ${__anio_bundler_version}.`
-);
 
 function normalizeResourcePath(resource) {
 	// todo: handle dot and double dot

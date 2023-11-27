@@ -5,6 +5,28 @@ const createTemporaryFile = require("../util/createTemporaryFile.js")
 const detectAndExtractShebang = require("../util/detectAndExtractShebang.js")
 const stringifyResourcesBundle = require("../util/stringifyResourcesBundle.js")
 
+async function addDebugBundlerMessage(build_context) {
+	const ver = build_context.package_json.version
+	const date = build_context.build_date.toUTCString()
+	const build_id = build_context.id
+
+	return `
+
+(function () {
+	if (typeof process !== "object") return;
+
+	if (!("env" in process)) return;
+
+	if (!("ANIO_BUNDLER_DEBUG" in process.env)) return;
+
+	process.stderr.write(
+		"[@anio-sh/bundler v${ver}] Application was bundled by version ${ver} on ${date} and has build id '${build_id}'.\\n"
+	);
+})();
+
+	`
+}
+
 module.exports = async function(context) {
 	const tmp_output_file = await createTemporaryFile(".mjs")
 
@@ -24,6 +46,7 @@ module.exports = async function(context) {
 	}
 
 	bundle_code += stringifyResourcesBundle(context.id, context.resources)
+	bundle_code += await addDebugBundlerMessage(context)
 	bundle_code += source_code
 
 	await fs.writeFile(context.output + ".tmp", bundle_code)
