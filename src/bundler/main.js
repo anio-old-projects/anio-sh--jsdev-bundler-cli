@@ -1,6 +1,7 @@
 const path = require("node:path")
 const findNearestFile = require("@anio-sh/find-nearest-file")
 const fs = require("node:fs/promises")
+const process = require("node:process")
 
 const arrayify = require("../util/arrayify.js")
 const createResourcesBundle = require("../util/createResourcesBundle.js")
