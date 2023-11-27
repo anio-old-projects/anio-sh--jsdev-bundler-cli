@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import loadResource from "@anio-sh/bundler"
+import {loadResource} from "../../src/index.mjs"
 
 async function b() {
 	console.log(

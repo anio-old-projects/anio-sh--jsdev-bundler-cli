@@ -5,8 +5,8 @@ if (!("__anio_bundler_resources" in globalThis)) {
 	globalThis.__anio_bundler_resources = {};
 }
 
-globalThis.__anio_bundler_resources["64de3d40048d8948-{0}"] = JSON.parse(
-	"{\"a/test.sh\":\"test\\n\",\"bla.sh\":\"\"}"
+globalThis.__anio_bundler_resources["1fadb664e3af6562-{0}"] = JSON.parse(
+	"{\"a/test.sh\":\"this is a test\\n\",\"file.sh\":\"\"}"
 );
 
 
@@ -19,74 +19,98 @@ globalThis.__anio_bundler_resources["64de3d40048d8948-{0}"] = JSON.parse(
 	if (!("ANIO_BUNDLER_DEBUG" in process.env)) return;
 
 	process.stderr.write(
-		"[@anio-sh/bundler v0.0.5] Application was bundled by version 0.0.5 on Mon, 27 Nov 2023 00:13:03 GMT and has build id '64de3d40048d8948-{0}'.\n"
+		"[@anio-sh/bundler v0.0.6] Application was bundled by version 0.0.6 on Mon, 27 Nov 2023 03:04:12 GMT and has build id '1fadb664e3af6562-{0}'.\n"
 	);
 })();
 
-	// 64de3d40048d8948-{0} will be replaced with the
-// appropriate bundle id when bundling with rollup.
-let __anio_bundle_id = "64de3d40048d8948-{0}";
-// 0.0.5 will be replaced with the
-// appropriate bundler version when bundling with rollup.
-let __anio_bundler_version = "0.0.5";
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import fs from 'node:fs/promises';
+import process from 'node:process';
 
-function printDebugMessage(message) {
-	if (typeof process !== "object") return
+async function findNearestFile(config_file_name, dir_path) {
+	const absolute_dir_path = await fs.realpath(dir_path);
+	const parent_dir_path = path.dirname(absolute_dir_path);
 
-	if (!("env" in process)) return
+	let config_path = null;
 
-	if (!("ANIO_BUNDLER_DEBUG" in process.env)) return
+	const entries = await fs.readdir(absolute_dir_path);
 
-	process.stderr.write(
-		`[@anio-sh/bundler v${__anio_bundler_version}] ${message}\n`
+	for (const entry of entries) {
+		const absolute_entry_path = path.resolve(absolute_dir_path, entry);
+		const stat = await fs.lstat(absolute_entry_path);
+
+		// ignore directories
+		if (stat.isDirectory() || stat.isSymbolicLink()) continue;
+
+		if (stat.isFile() && entry === config_file_name) {
+			config_path = absolute_entry_path;
+
+			break
+		}
+	}
+
+	if (config_path) {
+		return config_path
+	}
+
+	// do not recurse further if we just scanned root directory
+	if (absolute_dir_path === "/" && parent_dir_path === "/") {
+		return false
+	}
+
+	return await findNearestFile(config_file_name, parent_dir_path)
+}
+
+function callsites() {
+	const _prepareStackTrace = Error.prepareStackTrace;
+	try {
+		let result = [];
+		Error.prepareStackTrace = (_, callSites) => {
+			const callSitesWithoutCurrent = callSites.slice(1);
+			result = callSitesWithoutCurrent;
+			return callSitesWithoutCurrent;
+		};
+
+		new Error().stack; // eslint-disable-line unicorn/error-message, no-unused-expressions
+		return result;
+	} finally {
+		Error.prepareStackTrace = _prepareStackTrace;
+	}
+}
+
+// note: nodejs environment is implied
+
+async function loadResourceFromDisk(resource) {
+	const resource_path = resource;
+	// origin_dirname is path of calling script
+	const origin_dirname = path.dirname(
+		fileURLToPath(callsites()[1].getFileName())
 	);
-}
 
-function normalizeResourcePath(resource) {
-	// todo: handle dot and double dot
-	let normalized_path = resource;
+	const anio_project_config_path = await findNearestFile(
+		"anio_project.mjs", origin_dirname
+	);
 
-	while (normalized_path.includes("//")) {
-		normalized_path = normalized_path.slice("//").join("/");
+	const anio_project_root = path.dirname(anio_project_config_path);
+	const absolute_resource_path = path.resolve(anio_project_root, "bundle.resources", resource_path);
+
+	if ("ANIO_BUNDLER_DEBUG" in process.env) {
+		process.stderr.write(`[@anio-sh/bundler] Requested '${resource_path}', will be loaded from '${absolute_resource_path}')\n`);
 	}
 
-	return normalized_path
+	return (
+		await fs.readFile(
+			absolute_resource_path
+		)
+	).toString()
 }
 
-function loadResourceFromBundle(resource) {
-	if (!("__anio_bundler_resources" in globalThis)) {
-		throw new Error(
-			`__anio_bundler_resources global variable is missing. This is most likely due to misuse of the package OR a bug in @anio-sh/bundler.`
-		)
-	} else if (!(__anio_bundle_id in globalThis.__anio_bundler_resources)) {
-		throw new Error(
-			`Cannot find bundle '${__anio_bundle_id}' in __anio_bundler_resources. This is most likely due to a bug in @anio-sh/bundler.`
-		)
-	}
-
-	const resources = globalThis.__anio_bundler_resources[__anio_bundle_id];
-
-	const resource_path = normalizeResourcePath(resource);
-
-	if (!(resource_path in resources)) {
-		throw new Error(
-			`Cannot locate '${resource_path}' in bundle.`
-		)
-	}
-
-	printDebugMessage(`Load '${resource_path}' from local bundle '${__anio_bundle_id}'`);
-
-	return resources[resource_path]
-}
-
-//console.log('start')
-//import t from "virtual-module"
-//import loadResource from "./loadResource.mjs"
+const loadResource = loadResourceFromDisk;
 
 async function b() {
 	console.log(
-		"",
-		await loadResourceFromBundle("a/test.sh")
+		await loadResource("a/test.sh")
 	);
 }
 
@@ -95,5 +119,3 @@ async function a() {
 }
 
 a();
-
-//import "./bla/a.mjs"

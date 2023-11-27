@@ -1,3 +1,3 @@
 import loadResourceFromDisk from "./loadResourceFromDisk.mjs"
 
-export default loadResourceFromDisk
+export const loadResource = loadResourceFromDisk

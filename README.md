@@ -41,7 +41,7 @@ export default {
 Sources (that need to be embedded inside the bundle) must be saved under: `<project_root>/bundle.resources/` and can be loaded via:
 
 ```js
-import loadResource from "@anio-sh/bundler"
+import {loadResource} from "@anio-sh/bundler"
 
 const resource_contents = await loadResource("file.txt")
 ```

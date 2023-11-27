@@ -28,7 +28,7 @@ function normalizeResourcePath(resource) {
 	return normalized_path
 }
 
-export default function loadResourceFromBundle(resource) {
+function loadResourceFromBundle(resource) {
 	if (!("__anio_bundler_resources" in globalThis)) {
 		throw new Error(
 			`__anio_bundler_resources global variable is missing. This is most likely due to misuse of the package OR a bug in @anio-sh/bundler.`
@@ -53,3 +53,5 @@ export default function loadResourceFromBundle(resource) {
 
 	return resources[resource_path]
 }
+
+export const loadResource = loadResourceFromBundle

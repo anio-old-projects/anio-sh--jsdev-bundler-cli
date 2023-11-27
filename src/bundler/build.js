@@ -24,7 +24,7 @@ async function addDebugBundlerMessage(build_context) {
 	);
 })();
 
-	`
+`
 }
 
 module.exports = async function(context) {
