@@ -43,8 +43,12 @@ Sources (that need to be embedded inside the bundle) must be saved under: `<proj
 ```js
 import {loadResource} from "@anio-sh/bundler"
 
-const resource_contents = await loadResource("file.txt")
+const resource_contents = loadResource("file.txt")
 ```
+
+Note:
+
+> ⚠️ `loadResource` is _synchronous_ to be more versatile.
 
 This code would return the contents of `bundle.resources/file.txt`.
 
