@@ -48,7 +48,7 @@ const resource_contents = loadResource("file.txt")
 
 Note:
 
-> ⚠️ `loadResource` is _synchronous_ to be more versatile.
+> ⚠️ `loadResource` is _synchronous_ to be more versatile (i.e. so it is usable in `async` contexts as well).
 
 This code would return the contents of `bundle.resources/file.txt`.
 
