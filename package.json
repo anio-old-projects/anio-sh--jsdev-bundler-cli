@@ -10,7 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@anio-sh/find-nearest-file": "^0.0.3",
+    "@anio-sh/find-nearest-file": "^0.1.2",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "callsites": "^4.1.0",
     "rollup": "^4.5.1"

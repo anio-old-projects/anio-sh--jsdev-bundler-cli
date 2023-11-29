@@ -1,21 +1,21 @@
 // note: nodejs environment is implied
 import path from "node:path"
 import {fileURLToPath} from "node:url"
-import fs from "node:fs/promises"
+import fs from "node:fs"
 
-import findNearestFile from "@anio-sh/find-nearest-file"
+import findNearestFile from "@anio-sh/find-nearest-file/sync"
 import callsites from "callsites"
 
 import process from "node:process"
 
-export default async function loadResourceFromDisk(resource) {
+export default function loadResourceFromDisk(resource) {
 	const resource_path = resource
 	// origin_dirname is path of calling script
 	const origin_dirname = path.dirname(
 		fileURLToPath(callsites()[1].getFileName())
 	)
 
-	const anio_project_config_path = await findNearestFile(
+	const anio_project_config_path = findNearestFile(
 		"anio_project.mjs", origin_dirname
 	)
 
@@ -27,7 +27,7 @@ export default async function loadResourceFromDisk(resource) {
 	}
 
 	return (
-		await fs.readFile(
+		fs.readFileSync(
 			absolute_resource_path
 		)
 	).toString()
