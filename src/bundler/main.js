@@ -1,5 +1,5 @@
 const path = require("node:path")
-const findNearestFile = require("@anio-sh/find-nearest-file/async")
+const findNearestFile = require("@anio-core-sh/nodejs-find-nearest-file/async")
 const fs = require("node:fs/promises")
 const process = require("node:process")
 

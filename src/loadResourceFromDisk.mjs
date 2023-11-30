@@ -3,7 +3,7 @@ import path from "node:path"
 import {fileURLToPath} from "node:url"
 import fs from "node:fs"
 
-import findNearestFile from "@anio-sh/find-nearest-file/sync"
+import findNearestFile from "@anio-core-sh/nodejs-find-nearest-file/sync"
 import callsites from "callsites"
 
 import process from "node:process"
