@@ -6,7 +6,7 @@ const detectAndExtractShebang = require("../util/detectAndExtractShebang.js")
 const stringifyResourcesBundle = require("../util/stringifyResourcesBundle.js")
 
 async function addDebugBundlerMessage(build_context) {
-	const ver = build_context.package_json.version
+	const ver = build_context.anio_bundler.package_json.version
 	const date = build_context.build_date.toUTCString()
 	const build_id = build_context.id
 

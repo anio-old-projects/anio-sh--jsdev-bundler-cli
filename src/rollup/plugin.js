@@ -16,7 +16,7 @@ async function createVirtualModuleSourceCode(build_context) {
 		.join(build_context.id)
 		.split("$bundler_version$")
 		.join(
-			build_context.package_json.version
+			build_context.anio_bundler.package_json.version
 		)
 }
 
