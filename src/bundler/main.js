@@ -8,6 +8,7 @@ const createResourcesBundle = require("../util/createResourcesBundle.js")
 const randomIdentifier = require("../util/randomIdentifier.js")
 const resolvePathFactory = require("./resolvePath.js")
 const isDirectory = require("../util/isDirectory.js")
+const isFile = require("../util/isFile.js")
 
 const rollup_pluginFactory = require("../rollup/plugin.js")
 
@@ -21,6 +22,20 @@ async function readAnioProjectConfig(anio_project_config_path) {
 	}
 
 	return config
+}
+
+async function readProjectPackageJSON(project_root) {
+	const package_json_path = path.resolve(project_root, "package.json")
+
+	if (!(await isFile(package_json_path))) {
+		return null
+	}
+
+	process.stderr.write(`Found package.json    : ${package_json_path}\n`)
+
+	const contents = (await fs.readFile(package_json_path)).toString()
+
+	return JSON.parse(contents)
 }
 
 module.exports = async function(project_root) {
@@ -47,6 +62,10 @@ module.exports = async function(project_root) {
 		anio_project_config_path
 	)
 
+	const project_package_json = await readProjectPackageJSON(
+		project_root
+	)
+
 	const resources_path = path.resolve(
 		path.dirname(anio_project_config_path), "bundle.resources"
 	)
@@ -70,6 +89,7 @@ module.exports = async function(project_root) {
 		const bundle_id = `${build_id}-{${i}}`
 
 		let build_context = {
+			project_package_json,
 			anio_bundler: {package_json},
 			id: bundle_id,
 			build_date,
