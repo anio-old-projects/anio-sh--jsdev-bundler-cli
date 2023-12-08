@@ -59,3 +59,19 @@ globalThis.__anio_bundler_resources["64de3d40048d8948-{0}"] = JSON.parse(
 	"{\"a/test.sh\":\"test\\n\"}"
 );
 ```
+
+### Accessing project's `package.json`
+
+It is possible to access the project's `package.json` in a bundle and at runtime like so:
+
+```js
+import {loadPackageJSON} from "@anio-sh/bundler"
+
+//
+// returns live package.json contents
+// OR the bundled version of it
+//
+const package_json = loadPackageJSON()
+```
+
+When bundling, the contents of the current `package.json` will be embedded into the bundle.
