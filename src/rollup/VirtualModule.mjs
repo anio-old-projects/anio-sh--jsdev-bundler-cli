@@ -54,4 +54,15 @@ function loadResourceFromBundle(resource) {
 	return resources[resource_path]
 }
 
+function loadProjectPackageJSON() {
+	try {
+		return JSON.parse($project_package_json$)
+	} catch (e) {
+		printDebugMessage(`Failed to parse embedded package.json's file content.`)
+
+		return null
+	}
+}
+
 export const loadResource = loadResourceFromBundle
+export const loadPackageJSON = loadProjectPackageJSON

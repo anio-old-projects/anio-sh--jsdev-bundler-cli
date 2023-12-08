@@ -18,6 +18,10 @@ async function createVirtualModuleSourceCode(build_context) {
 		.join(
 			build_context.anio_bundler.package_json.version
 		)
+		.split("$project_package_json$")
+		.join(
+			JSON.stringify(JSON.stringify(build_context.project_package_json))
+		)
 }
 
 module.exports = function(build_context) {
