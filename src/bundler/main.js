@@ -71,7 +71,7 @@ module.exports = async function(project_root) {
 
 		let build_context = {
 			anio_bundler: {package_json},
-			id:  bundle_id,
+			id: bundle_id,
 			build_date,
 			input: resolvePath(bundle.entry),
 			output: resolvePath(bundle.output),
