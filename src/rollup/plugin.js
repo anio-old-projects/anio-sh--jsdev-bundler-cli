@@ -7,7 +7,7 @@ async function createVirtualModuleSourceCode(build_context) {
 	const template_str = (await fs.readFile(
 		path.resolve(
 			__dirname,
-			"loadResourceFromBundle.mjs"
+			"VirtualModule.mjs"
 		)
 	)).toString()
 
