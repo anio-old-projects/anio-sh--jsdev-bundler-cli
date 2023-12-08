@@ -66,3 +66,10 @@ function loadProjectPackageJSON() {
 
 export const loadResource = loadResourceFromBundle
 export const loadPackageJSON = loadProjectPackageJSON
+
+export function getBundlerInformation() {
+	return {
+		live: false,
+		version: __anio_bundler_version
+	}
+}

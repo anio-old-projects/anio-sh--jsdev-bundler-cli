@@ -75,3 +75,15 @@ const package_json = loadPackageJSON()
 ```
 
 When bundling, the contents of the current `package.json` will be embedded into the bundle.
+
+### Accessing information about `@anio-sh/bundler`
+
+It is possible to retrive information about the bundler in use:
+
+```js
+import {getBundlerInformation} from "@anio-sh/bundler"
+
+// live = true => running in "normal" mode
+// live = false => running in "bundle" mode
+console.log(getBundlerInformation())
+```
